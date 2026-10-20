@@ -10,8 +10,8 @@ app.use(express.json())
 mongoose.connect("mongodb://localhost:27017/expensedb")
 
 app.post("/api/expenses", expenseController.addExpenses);
-app.get("/api/expenses", expenseController.getExpense);
-app.get("/api/expenses/:id", expenseController.getExpenses);
+app.get("/api/expenses", expenseController.getExpenses);
+app.get("/api/expenses/:id", expenseController.getExpense);
 app.put("/api/expenses/:id", expenseController.updateExpenses);
 app.delete("/api/expenses/:id", expenseController.deleteExpenses);
 

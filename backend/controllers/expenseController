@@ -1,42 +1,116 @@
-import Expense from "../models/Expense.js"
+import Expense from "../models/Expense.js";
 
 const expenseController = {
-    async addExpenses(req, res) {
-         const body = req.body
-         await Expense.create(body)
-        res.send({
-            message:"Success! New record created."
-        })
-    },
-    async getExpense(req, res) {
-        const params = req.params
-        const record = await Expense.findById(params.id);
-        data : record
-        res.send({
-            message : "Success! record found."
-        })
-    },
-   async getExpenses(req, res) {
-        const records = await Expense.find()
-        data : records
-        res.send({
-            message : "Success! records found."
-        })
-    },
-    async updateExpenses(req, res) {
-        const params = req.params
-        const updateRecord = await Expense.findByIdAndUpdate()
-        res.send({
-            message : "Success! records updated."
-        })
-    },
-    async deleteExpenses(req, res) {
-        const params = req.params
-        const deleteRecord = await Expense.findByIdAndDelete()
-        res.send({
-            message : "Success! records are deleted."
-        })
+  async addExpenses(req, res) {
+    const body = req.body;
+    if (!body.title) {
+      res.status(500).send({
+        error: "title name is required",
+      });
+    } else {
+      try {
+        await Expense.create(body);
+        res.status(201).send({
+          message: "Success! New record created.",
+        });
+      } catch (error) {
+        console.error("Error occured while creating a new title : ", error);
+        res.status(500).send({
+          error: error,
+        });
+      }
     }
-}
+  },
+  async getExpense(req, res) {
+    const params = req.params;
+    try {
+      const record = await Expense.findById(params.id);
 
-export default expenseController
+      if (!record) {
+        return res.status(404).send({
+          message: "Failure! No record found with this ID.",
+          data: null,
+        });
+      }
+
+      res.status(201).send({
+        message: "Success! record found.",
+        data: record,
+      });
+    } catch (error) {
+      console.error("Error occured while getting a record : ", error);
+      res.status(500).send({
+        error: error,
+      });
+    }
+  },
+  async getExpenses(req, res) {
+    try {
+      const records = await Expense.find();
+      if (!records) {
+        return res.status(404).send({
+          message: "Failure! No record found with this ID.",
+          data: null,
+        });
+      }
+      res.status(201).send({
+        message: "Success! records found.",
+        data: records,
+      });
+    } catch (error) {
+      console.error("Error occured while getting records : ", error);
+      res.status(500).send({
+        error: error,
+      });
+    }
+  },
+  async updateExpenses(req, res) {
+    const params = req.params;
+    const body = req.body;
+    if (!body.title) {
+      res.status(500).send({
+        error: "title name is required",
+      });
+    } else {
+      try {
+        const updateRecord = await Expense.findByIdAndUpdate(params.id, body);
+        if (!updateRecord) {
+          return res.status(404).send({
+            message: "Failure! No record found with this ID.",
+            data: null,
+          });
+        }
+        res.status(201).send({
+          message: "Success! records updated.",
+        });
+      } catch (error) {
+        console.error("Error occured while updating record : ", error);
+        res.status(500).send({
+          error: error,
+        });
+      }
+    }
+  },
+  async deleteExpenses(req, res) {
+    const params = req.params;
+    try {
+      const deleteRecord = await Expense.findByIdAndDelete(params.id);
+      if (!deleteRecord) {
+        return res.status(404).send({
+          message: "Failure! No record found with this ID.",
+          data: null,
+        });
+      }
+      res.status(201).send({
+        message: "Success! records are deleted.",
+      });
+    } catch (error) {
+      console.error("Error occured while deleting record : ", error);
+      res.status(500).send({
+        error: error,
+      });
+    }
+  },
+};
+
+export default expenseController;
