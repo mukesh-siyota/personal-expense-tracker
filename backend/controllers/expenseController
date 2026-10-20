@@ -2,14 +2,13 @@ import Expense from "../models/Expense.js";
 
 const expenseController = {
   async addExpenses(req, res) {
-    const body = req.body;
     if (!body.title) {
       res.status(500).send({
         error: "title name is required",
       });
     } else {
       try {
-        await Expense.create(body);
+        const newExpense = await Expense.create(req.body); 
         res.status(201).send({
           message: "Success! New record created.",
         });
